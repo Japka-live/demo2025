@@ -1,0 +1,17 @@
+#Пример настройки ip интерфейсов в файле /etc/network/inetrfaces
+#dhcp интерфейс
+auto ens№ inet dhcp
+
+#Статическая настройка интерфейсов
+auto ens№ inet static
+  address 192.168.10.10/24
+  gateway  192.168.10.1
+
+#Если нужно настроить несколько интерфейсов
+auto ens№ inet static
+  address 192.168.10.10/24
+  gateway  192.168.10.1
+
+auto ens№ inet static
+  address 192.168.20.10/26
+  gateway  192.168.20.1
