@@ -19,10 +19,10 @@ echo "Установка FRR..."
 apt update
 apt install -y frr frr-pythontools
 
-# Обновление конфигурации daemons.conf
+# Обновление конфигурации daemons
 echo "Изменяем настройку daemons.conf для OSPF..."
-if grep -q "ospfd=no" /etc/frr/daemons.conf; then
-    sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons.conf
+if grep -q "ospfd=no" /etc/frr/daemons; then
+    sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
 else
     echo "Настройка ospfd уже установлена на yes или не найдена."
 fi
