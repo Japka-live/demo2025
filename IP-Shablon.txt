@@ -1,4 +1,5 @@
 #Пример настройки ip интерфейсов в файле /etc/network/inetrfaces
+#Вам всего лишь нужно скопировать эти блоки настроек и вставить в /etc/network/interfaces
 #dhcp интерфейс
 auto ens№ inet dhcp
 
