@@ -47,6 +47,9 @@ sshpass -p "resu" ssh -o StrictHostKeyChecking=no "user@192.168.10.3" << EOF
 # Переход в режим root
 echo "toor" | su - -c "
 hostnamectl set-hostname HQ-SRV
+sed -i.bak 's/#Port 22/Port 2222/' /etc/ssh/sshd_config
+echo 'sshd: 192.168.20.3' >> /etc/hosts.deny
+systemctl restart ssh
 useradd Admin
 echo "Admin:P@ssw0rd" | chpasswd
 exit  # Выход из режима root
