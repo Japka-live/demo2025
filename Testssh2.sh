@@ -21,4 +21,14 @@ ROOT_PASS="toor"
 #Переименование и создание пользователя Admin на CLI
 hostnamectl hostname CLI
 useradd Admin
-echo "Admin:P@ssword" | chpasswd
+echo "Admin:P@ssw0rd" | chpasswd
+
+# Подключение по SSH к HQ-RTR и выполнение команд
+sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" << EOF
+# Переход в режим root
+echo "$ROOT_PASS" | su - -c "
+hostnamectl set-hostname HQ-RTR
+useradd Admin
+echo "Admin:P@ssw0rd" | chpasswd
+"
+EOF
