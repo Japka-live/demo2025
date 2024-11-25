@@ -49,3 +49,4 @@ echo "Настройка OSPF..."
 } | vtysh
 
 echo "Настройка OSPF завершена."
+reboot
