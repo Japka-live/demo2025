@@ -5,10 +5,15 @@
 #    echo "Пожалуйста, запустите скрипт с правами суперпользователя (sudo)."
 #    exit
 #fi
+
+echo "Устанавливаем ssh"
+apt install ssh -y
+
 echo "Устанавливаем iptables"
 apt install -y iptables iptables-persistent
 iptables -t nat -A POSTROUTING -s 192.168.20.0/29 -o ens33 -j MASQUERADE
 netfilter-persistent save
+
 # Удаление решетки из net.ipv4.ip_forward
 echo "Убираем решетку из поля net.ipv4.ip_forward в /etc/sysctl.conf..."
 sed -i 's/#\?\(net.ipv4.ip_forward=\)/\1/' /etc/sysctl.conf
