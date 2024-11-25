@@ -43,6 +43,7 @@ echo "Admin:P@ssw0rd" | chpasswd
 useradd Network_admin
 echo "Network_admin:P@ssw0rd" | chpasswd
 apt install iperf3 -y
+sh /root/demo2024/DHCP.sh
 exit  # Выход из режима root
 "
 exit  # Выход из сеанса SSH
