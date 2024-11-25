@@ -9,14 +9,13 @@ then
 fi
 
 # Переменные
-SSH_HOST="192.168.20.1"
+SSH_HQ-RTR="192.168.10.1"
 SSH_USER="user"
 SSH_PASS="resu"
 ROOT_PASS="toor"
 
 # Подключение по SSH и выполнение команд
-sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" << EOF
+sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HQ-RTR" << EOF
 echo "$ROOT_PASS" | su - 
-ls -a
-touch example.txt
+apt instal isc-dhcp-server
 EOF
