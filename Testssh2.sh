@@ -9,13 +9,16 @@ then
 fi
 
 # Переменные
-SSH_HQ="192.168.10.1"
+SSH_ISP="10.10.10.1"
+SSH_HQRTR="10.10.10.2"
+SSH_BRRTR="10.10.10.6"
+SSH_HQSRV="192.168.10.3"
+SSH_BRSRV="192.168.30.3"
 SSH_USER="user"
 SSH_PASS="resu"
 ROOT_PASS="toor"
 
-# Подключение по SSH и выполнение команд
-echo "$ROOT_PASS" | su - -c "
-
-"
-EOF
+#Переименование и создание пользователя Admin на CLI
+hostnamectl hostname CLI
+useradd Admin
+echo "Admin:P@ssword" | chpasswd
