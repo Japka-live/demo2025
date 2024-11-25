@@ -29,6 +29,7 @@ sshpass -p "resu" ssh -o StrictHostKeyChecking=no "user@10.10.10.2" << EOF
 # Переход в режим root
 echo "toor" | su - -c "
 hostnamectl set-hostname HQ-RTR
+mkdir /root/BACKUP
 useradd Admin
 echo "Admin:P@ssw0rd" | chpasswd
 useradd Network_admin
@@ -57,6 +58,7 @@ sshpass -p "resu" ssh -o StrictHostKeyChecking=no "user@10.10.10.6" << EOF
 # Переход в режим root
 echo "toor" | su - -c "
 hostnamectl set-hostname BR-RTR
+mkdir /root/BACKUP
 useradd Branch_admin
 echo "Branch_admin:P@ssw0rd" | chpasswd
 useradd Network_admin
