@@ -30,6 +30,8 @@ echo "toor" | su - -c "
 hostnamectl set-hostname HQ-RTR
 useradd Admin
 echo "Admin:P@ssw0rd" | chpasswd
+useradd Network_admin
+echo "Network_admin:P@ssw0rd" | chpasswd
 exit  # Выход из режима root
 "
 exit  # Выход из сеанса SSH
@@ -42,6 +44,34 @@ echo "toor" | su - -c "
 hostnamectl set-hostname HQ-SRV
 useradd Admin
 echo "Admin:P@ssw0rd" | chpasswd
+exit  # Выход из режима root
+"
+exit  # Выход из сеанса SSH
+EOF
+
+# Подключение по SSH к BR-RTR и выполнение команд
+sshpass -p "resu" ssh -o StrictHostKeyChecking=no "user@10.10.10.6" << EOF
+# Переход в режим root
+echo "toor" | su - -c "
+hostnamectl set-hostname BR-RTR
+useradd Branch_admin
+echo "Branch_admin:P@ssw0rd" | chpasswd
+useradd Network_admin
+echo "Network_admin:P@ssw0rd" | chpasswd
+exit  # Выход из режима root
+"
+exit  # Выход из сеанса SSH
+EOF
+
+# Подключение по SSH к BR-SRV и выполнение команд
+sshpass -p "resu" ssh -o StrictHostKeyChecking=no "user@192.168.30.3" << EOF
+# Переход в режим root
+echo "toor" | su - -c "
+hostnamectl set-hostname BR-SRV
+useradd Branch_admin
+echo "Branch_admin:P@ssw0rd" | chpasswd
+useradd Network_admin
+echo "Network_admin:P@ssw0rd" | chpasswd
 exit  # Выход из режима root
 "
 exit  # Выход из сеанса SSH
