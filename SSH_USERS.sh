@@ -23,6 +23,16 @@ hostnamectl hostname CLI
 useradd Admin
 echo "Admin:P@ssw0rd" | chpasswd
 
+# Подключение по SSH к ISP и установка iperf
+sshpass -p "resu" ssh -o StrictHostKeyChecking=no "user@10.10.10.1" << EOF
+# Переход в режим root
+echo "toor" | su - -c "
+apt install iperf3 -y
+exit  # Выход из режима root
+"
+exit  # Выход из сеанса SSH
+EOF
+
 # Подключение по SSH к HQ-RTR и выполнение команд
 sshpass -p "resu" ssh -o StrictHostKeyChecking=no "user@10.10.10.2" << EOF
 # Переход в режим root
@@ -32,6 +42,7 @@ useradd Admin
 echo "Admin:P@ssw0rd" | chpasswd
 useradd Network_admin
 echo "Network_admin:P@ssw0rd" | chpasswd
+apt install iperf3 -y
 exit  # Выход из режима root
 "
 exit  # Выход из сеанса SSH
