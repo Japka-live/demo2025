@@ -30,5 +30,19 @@ echo "toor" | su - -c "
 hostnamectl set-hostname HQ-RTR
 useradd Admin
 echo "Admin:P@ssw0rd" | chpasswd
+exit  # Выход из режима root
 "
+exit  # Выход из сеанса SSH
+EOF
+
+# Подключение по SSH к HQ-SRV и выполнение команд
+sshpass -p "resu" ssh -o StrictHostKeyChecking=no "user@192.168.10.3" << EOF
+# Переход в режим root
+echo "toor" | su - -c "
+hostnamectl set-hostname HQ-SRV
+useradd Admin
+echo "Admin:P@ssw0rd" | chpasswd
+exit  # Выход из режима root
+"
+exit  # Выход из сеанса SSH
 EOF
