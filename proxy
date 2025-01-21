@@ -1,0 +1,19 @@
+server {
+    listen 80;
+
+    server_name moodle.au-team.irpo;
+    
+    location / {
+        proxy_pass http://192.168.10.3;
+    }
+}
+
+server {
+    listen 80;
+
+    server_name wiki.au-team.irpo;
+
+    location / {
+        proxy_pass http://192.168.30.3;
+    }
+}
