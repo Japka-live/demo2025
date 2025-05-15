@@ -8,25 +8,40 @@ PASSWORD="P@ssw0rd"
 
 echo "===> Создание пользователя $USERNAME с UID $USERID"
 adduser --uid "$USERID" --disabled-password --gecos "" "$USERNAME"
-
 echo "$USERNAME:$PASSWORD" | chpasswd
 
 echo "===> Установка пакета sudo"
 apt update
 apt install -y sudo
 
-echo "===> Настройка прав sudo в файле /etc/sudoers"
+echo "===> Правка файла /etc/sudoers"
 
-# Вставка строки в sudoers-файл сразу под строкой %sudo ...
-awk '
-/^%sudo\s+ALL=\(ALL:ALL\)\s+ALL/ && !x { 
-    print; 
-    print ""; 
-    print "sshuser ALL=(ALL:ALL) NOPASSWD:ALL"; 
-    x=1; 
-    next 
-} 
-{ print }' /etc/sudoers > /tmp/sudoers.new
+# Временный файл
+TEMP_SUDOERS="/tmp/sudoers.new"
+
+# Создаем новый файл sudoers, добавляя строку вручную после строки "%sudo..."
+inserted=0
+while IFS= read -r line; do
+    echo "$line" >> "$TEMP_SUDOERS"
+    if [[ "$line" =~ ^%sudo[[:space:]]+ALL=\(ALL:ALL\)[[:space:]]+ALL$ ]] && [[ $inserted -eq 0 ]]; then
+        echo "" >> "$TEMP_SUDOERS"
+        echo "$USERNAME ALL=(ALL:ALL) NOPASSWD:ALL" >> "$TEMP_SUDOERS"
+        inserted=1
+    fi
+done < /etc/sudoers
+
+# Проверяем корректность
+visudo -cf "$TEMP_SUDOERS"
+if [[ $? -eq 0 ]]; then
+    cp "$TEMP_SUDOERS" /etc/sudoers
+    echo "===> Строка успешно добавлена в sudoers"
+else
+    echo "Ошибка в синтаксисе sudoers — изменения не применены"
+    exit 1
+fi
+
+# Очистка
+rm -f "$TEMP_SUDOERS"
 
 # Проверка синтаксиса перед заменой
 visudo -cf /tmp/sudoers.new
