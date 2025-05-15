@@ -7,23 +7,38 @@ USERID=1010
 PASSWORD="P@ssw0rd"
 
 echo "===> Создание пользователя $USERNAME с UID $USERID"
+adduser --uid "$USERID" --disabled-password --gecos "" "$USERNAME"
 
-# Создание пользователя с заданным UID, без интерактивного ввода
-sudo adduser --uid "$USERID" --disabled-password --gecos "" "$USERNAME"
+echo "$USERNAME:$PASSWORD" | chpasswd
 
-# Установка пароля
-echo "${USERNAME}:${PASSWORD}" | sudo chpasswd
+echo "===> Установка пакета sudo"
+apt update
+apt install -y sudo
 
-echo "===> Установка sudo"
-sudo apt update
-sudo apt install -y sudo
+echo "===> Настройка прав sudo в файле /etc/sudoers"
 
-echo "===> Назначение привилегий sudo без запроса пароля"
+# Вставка строки в sudoers-файл сразу под строкой %sudo ...
+awk '
+/^%sudo\s+ALL=\(ALL:ALL\)\s+ALL/ && !x { 
+    print; 
+    print ""; 
+    print "sshuser ALL=(ALL:ALL) NOPASSWD:ALL"; 
+    x=1; 
+    next 
+} 
+{ print }' /etc/sudoers > /tmp/sudoers.new
 
-# Добавление пользователя в sudo-группу
-sudo usermod -aG sudo "$USERNAME"
+# Проверка синтаксиса перед заменой
+visudo -cf /tmp/sudoers.new
 
-# Добавление строки в sudoers (через visudo для безопасности)
-sudo bash -c "echo -e '\n$USERNAME ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers"
+# Только если проверка прошла — заменить
+if [ $? -eq 0 ]; then
+    cp /tmp/sudoers.new /etc/sudoers
+    echo "===> Права sudo успешно назначены для $USERNAME"
+else
+    echo "Ошибка в синтаксисе sudoers. Изменения не применены."
+    exit 1
+fi
 
-echo "===> Пользователь $USERNAME создан и добавлен в sudo с правами без пароля"
+# Очистка
+rm /tmp/sudoers.new
