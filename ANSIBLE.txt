@@ -1,0 +1,21 @@
+На машине BR-SRV ввести команды
+войти в sshuser
+ssh-keygen –t rsa потом enter
+ssh-copy-id -p 2024 sshuser@192.168.10.3
+ssh-copy-id user@192.168.20.3
+ssh-copy-id net_admin@192.168.10.1
+ssh-copy-id net_admin@192.168.30.1
+перейти в root
+ввести apt install ansible –y
+mkdir –p /etc/ansible/
+touch /etc/ansible/hosts
+nano /etc/ansible/hosts
+ввести столбиком
+[group]
+192.168.10.3 ansible_port=2024 ansible_user=sshuser
+192.168.20.3 ansible_user=user
+192.168.10.1 ansible_user=net_admin
+192.168.30.1 ansible_user=net_admin
+закрыть и сохранить файл
+перейти в sshuser
+ввести ansible all –m ping
