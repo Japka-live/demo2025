@@ -26,7 +26,7 @@ su - "$SSHUSER" -c "
 # Список получателей ключей
 declare -A HOSTS
 HOSTS["user@192.168.20.3"]="user"
-HOSTS["sshuser@192.168.10.3"]="sshuser"
+HOSTS["sshuser@192.168.10.3 -p2024"]="sshuser"
 HOSTS["net_admin@192.168.10.1"]="net_admin"
 HOSTS["net_admin@192.168.30.1"]="net_admin"
 
