@@ -1,48 +1,58 @@
 #!/bin/bash
 
-# Установка необходимых пакетов
-apt update && apt install -y sshpass ansible
+set -e
 
-# Переменные
-SSHUSER="sshuser"
-SSHUSER_PASS="P@ssw0rd"
-ROOT_PASS="toor"
+echo "===> Установка sshpass..."
+apt update
+apt install -y sshpass
 
-# Переключение на пользователя sshuser
-su - $SSHUSER <<EOF
+echo "===> Переход к пользователю sshuser и генерация SSH-ключа..."
+su - sshuser -c "
+  yes '' | ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+"
 
-# Генерация SSH-ключей без фразы
-yes "" | ssh-keygen -t rsa
+echo "===> Раздача SSH-ключей с использованием sshpass..."
+# Передача ключа user@192.168.20.3
+su - sshuser -c "
+  sshpass -p 'resu' ssh-copy-id -o StrictHostKeyChecking=no user@192.168.20.3
+"
 
-# Передача ключей на целевые машины
-sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no user@192.168.20.3
-sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no -p 2024 sshuser@192.168.10.3
-sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no net_admin@192.168.10.1
-sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no net_admin@192.168.30.1
+# Передача ключа sshuser@192.168.10.3 через порт 2024
+su - sshuser -c "
+  sshpass -p 'P@ssw0rd' ssh-copy-id -o StrictHostKeyChecking=no -p 2024 sshuser@192.168.10.3
+"
 
-EOF
+# Передача ключа net_admin@192.168.10.1
+su - sshuser -c "
+  sshpass -p 'P@$$word' ssh-copy-id -o StrictHostKeyChecking=no net_admin@192.168.10.1
+"
 
-# Настройка Ansible под root
-echo "$ROOT_PASS" | su - root <<EOF
+# Передача ключа net_admin@192.168.30.1
+su - sshuser -c "
+  sshpass -p 'P@$$word' ssh-copy-id -o StrictHostKeyChecking=no net_admin@192.168.30.1
+"
 
-# Создание структуры Ansible
+echo "===> Возвращение к root..."
+# Никакие действия не нужны — мы и так под root.
+
+echo "===> Установка Ansible..."
+apt install -y ansible
+
+echo "===> Создание инвентарного файла Ansible..."
 mkdir -p /etc/ansible/
 touch /etc/ansible/hosts
 
-# Запись инвентарного файла
-cat > /etc/ansible/hosts <<EOL
+cat <<EOF > /etc/ansible/hosts
 [group]
 192.168.10.3 ansible_port=2024 ansible_user=sshuser
 192.168.20.3 ansible_user=user
 192.168.10.1 ansible_user=net_admin
 192.168.30.1 ansible_user=net_admin
-EOL
-
 EOF
 
-# Проверка связи от имени sshuser
-su - $SSHUSER <<EOF
-echo "ВНИМАНИЕ ПРОВЕРКА ANSIBLE"
-sleep 2
-ansible all -m ping
-EOF
+echo "===> Возврат к пользователю sshuser и проверка Ansible..."
+su - sshuser -c "
+  echo 'ВНИМАНИЕ ПРОВЕРКА ANSIBLE'
+  sleep 2
+  ansible all -m ping
+"
