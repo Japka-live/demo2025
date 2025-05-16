@@ -3,17 +3,17 @@
 set -e
 
 echo "===> Установка FRR"
-sudo apt update
-sudo apt install frr -y
+apt update
+apt install frr -y
 
 echo "===> Включение демона OSPF"
-sudo sed -i 's/^ospfd=no/ospfd=yes/' /etc/frr/daemons
+sed -i 's/^ospfd=no/ospfd=yes/' /etc/frr/daemons
 
 echo "===> Перезапуск FRR"
-sudo systemctl restart frr
+systemctl restart frr
 
 echo "===> Конфигурация через vtysh"
-sudo vtysh <<EOF
+vtysh <<EOF
 configure terminal
 router ospf
  passive-interface default
@@ -35,6 +35,6 @@ exit
 EOF
 
 echo "===> Финальный перезапуск FRR"
-sudo systemctl restart frr
+systemctl restart frr
 
 echo "===> Готово. FRR настроен."
