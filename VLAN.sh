@@ -32,3 +32,4 @@ EOF
 
 echo "===> Готово. Чтобы применить изменения, перезапусти сетевой сервис:"
 echo "      systemctl restart networking"
+service networking restart
