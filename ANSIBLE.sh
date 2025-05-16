@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Установка необходимых пакетов
+apt update && apt install -y sshpass ansible
+
 # Переменные
 SSHUSER="sshuser"
 SSHUSER_PASS="P@ssw0rd"
@@ -8,10 +11,10 @@ ROOT_PASS="toor"
 # Переключение на пользователя sshuser
 su - $SSHUSER <<EOF
 
-# Генерация SSH-ключей без фразы (нажимаем Enter 3 раза)
+# Генерация SSH-ключей без фразы
 yes "" | ssh-keygen -t rsa
 
-# Передача ключей
+# Передача ключей на целевые машины
 sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no user@192.168.20.3
 sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no -p 2024 sshuser@192.168.10.3
 sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no net_admin@192.168.10.1
@@ -19,17 +22,14 @@ sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no net_admin@192
 
 EOF
 
-# Возвращаемся в root (если нужно снова явно)
+# Настройка Ansible под root
 echo "$ROOT_PASS" | su - root <<EOF
 
-# Установка Ansible
-apt install ansible -y
-
-# Создание структуры
+# Создание структуры Ansible
 mkdir -p /etc/ansible/
 touch /etc/ansible/hosts
 
-# Настройка инвентарного файла
+# Запись инвентарного файла
 cat > /etc/ansible/hosts <<EOL
 [group]
 192.168.10.3 ansible_port=2024 ansible_user=sshuser
@@ -40,7 +40,7 @@ EOL
 
 EOF
 
-# Проверка
+# Проверка связи от имени sshuser
 su - $SSHUSER <<EOF
 echo "ВНИМАНИЕ ПРОВЕРКА ANSIBLE"
 sleep 2
