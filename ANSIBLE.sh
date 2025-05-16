@@ -1,58 +1,48 @@
-#!/bin/sh
-#не забудьте установить ssh на все машины
-set -e
+#!/bin/bash
 
-# --- Настройки пользователей и паролей ---
+# Переменные
 SSHUSER="sshuser"
 SSHUSER_PASS="P@ssw0rd"
 ROOT_PASS="toor"
 
-echo "===> Установка sshpass и ansible..."
-apt update
-apt install -y sshpass ansible
+# Переключение на пользователя sshuser
+su - $SSHUSER <<EOF
 
-echo "===> Создание ключа от имени $SSHUSER..."
+# Генерация SSH-ключей без фразы (нажимаем Enter 3 раза)
+yes "" | ssh-keygen -t rsa
 
-# Создаем временную папку для su-перехода
-su - "$SSHUSER" -c "
-  if [ ! -f ~/.ssh/id_rsa ]; then
-    echo '===> Генерация SSH ключа...'
-    ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
-  else
-    echo '===> SSH ключ уже существует, пропускаем генерацию.'
-  fi
-"
+# Передача ключей
+sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no user@192.168.20.3
+sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no -p 2024 sshuser@192.168.10.3
+sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no net_admin@192.168.10.1
+sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no net_admin@192.168.30.1
 
-# Список получателей ключей
-declare -A HOSTS
-HOSTS["user@192.168.20.3"]="user"
-HOSTS["sshuser@192.168.10.3 -p2024"]="sshuser"
-HOSTS["net_admin@192.168.10.1"]="net_admin"
-HOSTS["net_admin@192.168.30.1"]="net_admin"
+EOF
 
-echo "===> Передача SSH ключей..."
+# Возвращаемся в root (если нужно снова явно)
+echo "$ROOT_PASS" | su - root <<EOF
 
-for host in "${!HOSTS[@]}"; do
-  sshpass -p "$SSHUSER_PASS" ssh-copy-id -o StrictHostKeyChecking=no -i /home/$SSHUSER/.ssh/id_rsa.pub $host
-done
+# Установка Ansible
+apt install ansible -y
 
-echo "===> Настройка Ansible..."
+# Создание структуры
+mkdir -p /etc/ansible/
+touch /etc/ansible/hosts
 
-mkdir -p /etc/ansible
-cat <<EOF > /etc/ansible/hosts
+# Настройка инвентарного файла
+cat > /etc/ansible/hosts <<EOL
 [group]
 192.168.10.3 ansible_port=2024 ansible_user=sshuser
 192.168.20.3 ansible_user=user
 192.168.10.1 ansible_user=net_admin
 192.168.30.1 ansible_user=net_admin
+EOL
+
 EOF
 
-chown -R $SSHUSER:$SSHUSER /etc/ansible
-
-echo "===> Завершаем настройку: проверка подключения Ansible от имени sshuser..."
-
-su - "$SSHUSER" -c "
-  echo 'ВНИМАНИЕ: ПРОВЕРКА ANSIBLE'
-  sleep 2
-  ansible all -m ping
-"
+# Проверка
+su - $SSHUSER <<EOF
+echo "ВНИМАНИЕ ПРОВЕРКА ANSIBLE"
+sleep 2
+ansible all -m ping
+EOF
