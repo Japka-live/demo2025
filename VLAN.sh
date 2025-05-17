@@ -3,7 +3,7 @@
 set -e
 
 echo "===> Установка необходимых пакетов..."
-apt update
+#apt update
 apt install -y vlan bridge-utils
 
 echo "===> Загрузка модуля 8021q..."
