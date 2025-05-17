@@ -3,7 +3,7 @@
 set -e
 
 echo "===> Установка dnsmasq..."
-apt update
+#apt update
 apt install -y dnsmasq
 
 echo "===> Настройка /etc/dnsmasq.conf..."
