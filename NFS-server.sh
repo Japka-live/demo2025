@@ -3,7 +3,7 @@
 set -e
 
 echo "===> Установка NFS-сервера..."
-apt update
+#apt update
 apt install -y nfs-kernel-server
 
 echo "===> Создание каталога /raid5/nfs..."
