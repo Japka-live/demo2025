@@ -3,7 +3,7 @@
 set -e
 
 echo "===> Установка NFS-клиентских утилит..."
-apt update
+#apt update
 apt install -y nfs-common
 
 echo "===> Создание точки монтирования /mnt/nfs..."
