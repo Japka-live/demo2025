@@ -3,7 +3,7 @@
 set -e
 
 echo "===> Установка mdadm..."
-apt update
+#apt update
 apt install -y mdadm
 
 echo "===> Создание RAID 5 из /dev/sdb /dev/sdc /dev/sdd..."
