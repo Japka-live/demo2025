@@ -3,7 +3,7 @@
 set -e
 
 echo "===> Установка FRR"
-apt update
+#apt update
 apt install frr -y
 
 echo "===> Включение демона OSPF"
