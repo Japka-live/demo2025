@@ -3,7 +3,7 @@
 set -e
 
 echo "===> Установка chrony..."
-apt update
+#apt update
 apt install -y chrony
 
 echo "===> Настройка /etc/chrony/chrony.conf..."
