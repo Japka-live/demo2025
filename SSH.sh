@@ -3,7 +3,6 @@
 set -e
 
 echo "===> Установка OpenSSH"
-#apt update
 apt install ssh -y
 
 SSHD_CONFIG="/etc/ssh/sshd_config"
@@ -15,7 +14,7 @@ sed -i 's/^#Port .*/Port 2024/' "$SSHD_CONFIG"
 
 # Разрешаем только конкретного пользователя
 sed -i '/^AllowUsers/d' "$SSHD_CONFIG"
-"AllowUsers sshuser" | sudo tee -a "$SSHD_CONFIG" > /dev/null
+echo "AllowUsers sshuser" >> "$SSHD_CONFIG"
 
 # Ограничиваем количество попыток входа
 sed -i 's/^#MaxAuthTries.*/MaxAuthTries 2/' "$SSHD_CONFIG"
@@ -25,8 +24,7 @@ sed -i '/^#Banner none/a Banner /root/banner.txt' "$SSHD_CONFIG"
 
 # Создаем баннер
 echo "===> Создание баннера"
-touch /root/banner.txt
-echo "\$\$\$\$\$\$\$\$\$\$\$\$Authorized access only!\$\$\$\$\$\$\$\$\$\$\$\$" | sudo tee /root/banner.txt > /dev/null
+echo '$$$$$$$$$$$Authorized access only!$$$$$$$$$$$' > /root/banner.txt
 
 # Перезапуск SSH
 echo "===> Перезапуск SSH"
