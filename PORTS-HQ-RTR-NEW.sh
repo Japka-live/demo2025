@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Указываем IP-адрес HQ-SRV
-HQ_SRV_IP="192.168.10.3"
+HQ_SRV_IP="172.16.4.1"
 
 echo "===> Проброс порта 80 на ${HQ_SRV_IP}:80..."
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination ${HQ_SRV_IP}:80
